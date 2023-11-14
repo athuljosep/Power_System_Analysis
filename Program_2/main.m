@@ -29,7 +29,13 @@ T = zeros(n_bus,1);
 [V1_data,T1_data,T1] = NR(bus_data,V,T,P_inj,Q_inj,n_bus,Y,n_pq,pq_i);
 V_data = V1_data;
 T_data = T1_data;
+[V2_data,T2_data,T2] = FD(bus_data,V,T,P_inj,Q_inj,n_bus,Y,n_pq,pq_i);
 
+V = V_data(:,size(V_data,2))
+T = T_data(:,size(T_data,2))
+
+
+[V1_data,T1_data,T1] = NR(bus_data,V,T,P_inj,Q_inj,n_bus,Y,n_pq,pq_i);
 
 % P,Q calculation after convergence
 % [P,Q] = PQ_calc(V_data(:,size(V_data,2)),T_data(:,size(T_data,2)),Y)

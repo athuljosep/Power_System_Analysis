@@ -28,19 +28,39 @@ T = zeros(n_bus,1);
 
 [V_data,T_data,T1] = NR(bus_data,V,T,P_inj,Q_inj,n_bus,Y,n_pq,pq_i);
 
-V = V_data(:,size(V_data,2))
-T = T_data(:,size(T_data,2))
+V = V_data(:,size(V_data,2));
+T = T_data(:,size(T_data,2));
 
 n = 4;
-
 P_inj(n) = 0;
-J = J_calc(bus_data,V,T,Y,n_bus,n_pq,pq_i);
-a = n-1;
-b = n_bus-1 + find(pq_i == n);
-J_p = [J(a,a) J(a,b); J(b,a) J(b,b)]
 
-[V1_data,T1_data,T1] = NR(bus_data,V,T,P_inj,Q_inj,n_bus,Y,n_pq,pq_i);
+theta = 0;
+lambda = 0;
+vec = [theta; V(n); lambda];
+K = [0;1];
 
+sigma = 0.1;
+for k = 1:20
+    % Predictor
+    J = J_calc(bus_data,V,T,Y,n_bus,n_pq,pq_i);
+    a = n-1;
+    b = n_bus-1 + find(pq_i == n);
+    J_p = [J(a,a) J(a,b); J(b,a) J(b,b)];
+    pre(:,k) = vec(:,k) + sigma*inv([J_p K; 0 0 1])*[0;0;1];
+    
+
+    % Corrector
+    T(n) = pre(1,k);
+    V(n) = pre(2,k);
+    P_inj(n) = pre(3,k);
+    [V_data,T_data,T1] = NR(bus_data,V,T,P_inj,Q_inj,n_bus,Y,n_pq,pq_i);
+    V = V_data(:,size(V_data,2));
+    T = T_data(:,size(T_data,2));
+    vec(:,k+1) = [T(n);V(n);P_inj(n)];
+end
+pre
+vec
+plot(vec(3,:),vec(2,:))
 % P,Q calculation after convergence
 % [P,Q] = PQ_calc(V_data(:,size(V_data,2)),T_data(:,size(T_data,2)),Y)
 

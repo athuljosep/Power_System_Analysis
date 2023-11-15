@@ -1,9 +1,10 @@
-function [V_data,T_data,Tol_data] = NR(bus_data,V,T,P_inj,Q_inj,n_bus,Y,n_pq,pq_i)
+function [V_data,T_data,Tol_data,dvrg] = NR(bus_data,V,T,P_inj,Q_inj,n_bus,Y,n_pq,pq_i)
 % Initializing index
 i = 0;
 Tol = 1;
 del_T = zeros(n_bus,1);
 del_V = zeros(n_bus,1);
+dvrg = 0;
 
 % Iteration loop
 while(Tol > 1e-5 & i < 100)
@@ -22,5 +23,8 @@ while(Tol > 1e-5 & i < 100)
     end
     Tol = max(abs(delta)); % updating error for convergence
     Tol_data(i) = Tol;
+end
+if i >= 100
+    dvrg = 1;
 end
 end

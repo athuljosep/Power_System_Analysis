@@ -41,7 +41,7 @@ ek1 = [zeros(1,n_bus-1+n_pq) 1];
 ek2 = zeros(1,n_bus+n_pq);
 ek2_i = find(pq_i == n);
 ek2(n_bus-1+ek2_i) = -1;
-ek3 = -ek1
+ek3 = -ek1;
 sigma1 = 0.1;
 sigma2 = 0.005;
 lambda = 0;
@@ -80,7 +80,7 @@ while(dvrg == 0 & i < 100)
         i = i+1;
     end
 end
-
+i
 % step 2
 while(lambda > 0.75*prev_lambda & i < 200)
 
@@ -94,12 +94,16 @@ while(lambda > 0.75*prev_lambda & i < 200)
     for j = 1:n_pq
         V(pq_i(j)) = pre(n_bus+j-1);
     end
-    lambda = pre(end);
+    lambda = pre(end)
 
     % Corrector
     J = J_calc(bus_data,V,T,Y,n_bus,n_pq,pq_i);
+    V
+    T
+    P_inj*lambda;
+    Q_inj*lambda;
     [del_P, del_Q] = dpdq_calc(bus_data,V,T,P_inj*lambda,Q_inj*lambda,n_bus,Y);
-    corr = inv([J -lambda*K; ek2])*[del_P del_Q 0]';
+    corr = inv([J -lambda*K; ek2])*[del_P del_Q 0]'
     lambda = lambda + corr(end);
     if lambda <= 0.75*prev_lambda
         V = prev_V;
@@ -125,7 +129,7 @@ lambda
 % step 3
 dvrg = 0;
 while(dvrg == 0 & i < 250)
-    % step 1
+   
     % Predictor
     i
     theta = T(2:n_bus);

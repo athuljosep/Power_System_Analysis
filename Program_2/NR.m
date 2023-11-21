@@ -8,7 +8,7 @@ dvrg = 0;
 
 % Iteration loop
 while(Tol > 1e-3 & i < 100)
-    i = i+1
+    i = i+1;
     V = V+del_V;
     T = T+del_T;
     T_data(:,i) = T;

@@ -37,7 +37,7 @@ while(Tol > 1e-3 & i < 50)
     Tol = max(abs(delta)); % updating error for convergence
     Tol_data(i) = Tol;
 end
-i
+i;
 if i >= iter_limit
     dvrg = 1;
 end

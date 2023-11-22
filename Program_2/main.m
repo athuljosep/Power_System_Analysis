@@ -136,17 +136,17 @@ while(dvrg == 0 & i < 250)
     voltage = V(pq_i);
     vec = [theta; voltage; lambda];
     J = J_calc(bus_data,V,T,Y,n_bus,n_pq,pq_i);
-    pre = vec + sigma1*inv([J K; ek3])*ek1';
+    pre = vec + sigma1*inv([J K; ek3])*ek3';
     T = [0; pre(1:n_bus-1)];
     for j = 1:n_pq
         V(pq_i(j)) = pre(n_bus+j-1);
     end
-    lambda = pre(end);
+    lambda = pre(end)
     % Corrector
     V
     T
-    P_inj*lambda
-    Q_inj*lambda
+    P_inj*lambda;
+    Q_inj*lambda;
     [V_data,T_data,T1,dvrg] = NR(bus_data,V,T,P_inj*lambda,Q_inj*lambda,n_bus,Y,n_pq,pq_i);
     dvrg
     if dvrg == 1

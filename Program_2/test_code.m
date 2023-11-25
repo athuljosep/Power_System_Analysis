@@ -53,9 +53,9 @@ T = [         0
    -3.1053];
 
 
-lambda = 2.8622
+lambda = 2.8622;
 [V_data,T_data,T1,dvrg] = NR(bus_data,V,T,P_inj*lambda,Q_inj*lambda,n_bus,Y,n_pq,pq_i);
-
+% J = J_calc(bus_data,V,T,Y,n_bus,n_pq,pq_i);
 
 dvrg
-T1;
+% T1;

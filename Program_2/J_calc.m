@@ -27,9 +27,9 @@ for i = 2:n_bus
             for k = 1:n_bus
                 J2(i-1,j) = J2(i-1,j)+(V(i)*V(k)*abs(Y(i,k))*cos(angle(Y(i,k))-T(i)+T(k)));
             end
-            J2(i-1,j) = J2(i-1,j) + ((V(i)^2) * (real(Y(i,i))));
+            J2(i-1,j) = (J2(i-1,j) + ((V(i)^2) * (real(Y(i,i)))))/V(i);        
         else
-            J2(i-1,j) = V(i)*V(n)*abs(Y(i,n))*cos(angle(Y(i,n))-T(i)+T(n));
+            J2(i-1,j) = V(i)*abs(Y(i,n))*cos(angle(Y(i,n))-T(i)+T(n));
         end
     end
 end
@@ -62,9 +62,9 @@ for i = 1:n_pq
             for k = 1:n_bus
                 J4(i,j) = J4(i,j)+(V(n1)*V(k)*abs(Y(n1,k))*sin(angle(Y(n1,k))-T(n1)+T(k)));
             end
-            J4(i,j) = - J4(i,j) - ((V(n1)^2) * (imag(Y(n1,n1))));
+            J4(i,j) = (- J4(i,j) - ((V(n1)^2) * (imag(Y(n1,n1)))))/V(n1);
         else
-            J4(i,j) = -V(n1)*V(n2)*abs(Y(n1,n2))*sin(angle(Y(n1,n2))-T(n1)+T(n2));
+            J4(i,j) = -V(n1)*abs(Y(n1,n2))*sin(angle(Y(n1,n2))-T(n1)+T(n2));
         end
     end
 end

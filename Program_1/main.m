@@ -26,6 +26,8 @@ V = bus_data(:,11);
 V(find(V(:)==0)) = 1;
 T = zeros(n_bus,1);
 
+J = J_calc(bus_data,V,T,Y,n_bus,n_pq,pq_i);
+
 [V1_data,T1_data,T1] = NR(bus_data,V,T,P_inj,Q_inj,n_bus,Y,n_pq,pq_i);
 V_data = V1_data;
 T_data = T1_data;

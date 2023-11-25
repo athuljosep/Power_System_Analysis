@@ -10,7 +10,7 @@ del_V = zeros(n_bus,1);
 
 % Iteration loop
 while(Tol > 1e-5 & i < 100)
-    i = i+1
+    i = i+1;
     V = V+del_V;
     T = T+del_T;
     T_data(:,i) = T;

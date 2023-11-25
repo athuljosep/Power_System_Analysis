@@ -10,7 +10,6 @@ iter_limit = 50;
 % Iteration loop
 while(Tol > 1e-3 & i < 100)
     i = i+1;
-
     V = V+del_V;
     T = T+del_T;
     T_data(:,i) = T;
@@ -19,9 +18,6 @@ while(Tol > 1e-3 & i < 100)
     dpdq = [del_P, del_Q]; % mismatch calculation
     J = J_calc(bus_data,V,T,Y,n_bus,n_pq,pq_i); % Jacobian calculation
     delta = fwd_bwd(J,dpdq); % finding errors
-    
- 
-    
     del_T = [0 delta(1:n_bus-1)]';
     for j = 1:n_pq
         del_V(pq_i(j)) = delta(n_bus+j-1);

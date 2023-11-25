@@ -22,10 +22,11 @@ pq_i = find(bus_data(:,3) == 0);
 n_pv = length(pv_i);
 n_pq = length(pq_i);
 
-% n = 4;
-% CFP(n,n_bus,bus_data,P_inj,Q_inj,Y,sl_i,pq_i,n_pq);
+% n=4
+% CPF(n,n_bus,bus_data,P_inj,Q_inj,Y,sl_i,pq_i,n_pq);
 
+% Continuation Power Flow for each load bus
 for i = 1:n_pq 
-    n = pq_i(i)
+    n = pq_i(i);
     CPF(n,n_bus,bus_data,P_inj,Q_inj,Y,sl_i,pq_i,n_pq);
 end

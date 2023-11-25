@@ -1,11 +1,11 @@
 function CPF(n,n_bus,bus_data,P_inj,Q_inj,Y,sl_i,pq_i,n_pq)
+
 % Initializing Voltage magnitude and angles
 V = bus_data(:,11);
 V(find(V(:)==0)) = 1;
 T = zeros(n_bus,1);
 
-
-
+% Initializing Continuation Parameters
 P_k = P_inj;
 P_k(sl_i) = [];
 K = [P_k;Q_inj(pq_i)];
@@ -19,7 +19,8 @@ sigma2 = 0.005;
 lambda = 0;
 i = 1;
 
-% step 1
+% Phase 1: Power as Continuation Parameter
+% Initial value from Newton Raphson Method
 [V_data,T_data,T1,dvrg] = NR(bus_data,V,T,P_inj*lambda,Q_inj*lambda,n_bus,Y,n_pq,pq_i);
 V = V_data(:,size(V_data,2));
 T = T_data(:,size(T_data,2));
@@ -27,6 +28,7 @@ y(i) = V(n);
 x(i) = lambda;
 i = i+1;
 dvrg = 0;
+% Iteration for corrector predictor until divergence
 while(dvrg == 0 & i < 100)
     
     % Predictor
@@ -34,7 +36,7 @@ while(dvrg == 0 & i < 100)
     voltage = V(pq_i);
     vec = [theta; voltage; lambda];
     J = J_calc(bus_data,V,T,Y,n_bus,n_pq,pq_i);
-    pre = vec + sigma1*inv([J -K; ek1])*ek1';
+    pre = vec + sigma1*((fwd_bwd([J -K; ek1],ek1))');
     T = [0; pre(1:n_bus-1)];
     for j = 1:n_pq
         V(pq_i(j)) = pre(n_bus+j-1);
@@ -60,13 +62,14 @@ while(dvrg == 0 & i < 100)
     end
 end
 
-
-% step 2
-f_stop = 0.75;
+% Phase 2: Voltage as Continuation Parameter
+f_stop = 0.75; % stop factor for second phase
+% Increased sigma and stop factor for bus 12 & 13
 if (n == 12 | n ==13)
     f_stop = 0.98
     sigma2 = 0.0005
 end
+% Iteration for corrector predictor until some percentage of lambda
 while(lambda > f_stop*prev_lambda & i < 200)
     
     % Predictor
@@ -74,7 +77,7 @@ while(lambda > f_stop*prev_lambda & i < 200)
     voltage = V(pq_i);
     vec = [theta; voltage; lambda];
     J = J_calc(bus_data,V,T,Y,n_bus,n_pq,pq_i);
-    pre = vec + (sigma2*inv([J -K; ek2])*ek1');
+    pre = vec + sigma2*((fwd_bwd([J -K; ek2],ek1))');
     T = [0; pre(1:n_bus-1)];
     for j = 1:n_pq
         V(pq_i(j)) = pre(n_bus+j-1);
@@ -84,7 +87,7 @@ while(lambda > f_stop*prev_lambda & i < 200)
     % Corrector
     J = J_calc(bus_data,V,T,Y,n_bus,n_pq,pq_i);
     [del_P, del_Q] = dpdq_calc(bus_data,V,T,P_inj*lambda,Q_inj*lambda,n_bus,Y);
-    corr = inv([J -lambda*K; ek2])*[del_P del_Q 0]';
+    corr = (fwd_bwd([J -lambda*K; ek2],[del_P del_Q 0]'))';
     lambda = lambda + corr(end);
     if lambda <= f_stop*prev_lambda
         V = prev_V;
@@ -104,8 +107,8 @@ while(lambda > f_stop*prev_lambda & i < 200)
     end
 end
 
-% step 3
-dvrg = 0;
+% Phase 3: Power as Continuation Parameter
+% Iteration for corrector predictor until negative lambda
 while(lambda >= 0 & i < 250)
    
     % Predictor
@@ -114,7 +117,7 @@ while(lambda >= 0 & i < 250)
     voltage = V(pq_i);
     vec = [theta; voltage; lambda];
     J = J_calc(bus_data,V,T,Y,n_bus,n_pq,pq_i);
-    pre = vec + sigma1*inv([J -K; ek3])*ek1';
+    pre = vec + sigma1*((fwd_bwd([J -K; ek3],ek1))');
     T = [0; pre(1:n_bus-1)];
     for j = 1:n_pq
         V(pq_i(j)) = pre(n_bus+j-1);
@@ -130,11 +133,11 @@ while(lambda >= 0 & i < 250)
     i = i+1;
 end
 
-% plotting code
+% plotting CPF curve
 x_label = '\lambda'; % x axis label
 y_label = 'Voltage (p.u.)'; % y axis label
 legend_name = {'CPF Phase 1','CPF Phase 2','CPF Phase 3'}; % legend names
-title_name = ['PV Curve for bus number ' num2str(n)];
+title_name = ['PV Curve for bus number ' num2str(n)]; % title name
 figure('Renderer', 'painters', 'Position', [10 10 800 600])
 plot(x(1:ph1),y(1:ph1),'-ob','LineWidth',1.5)
 hold on
@@ -152,5 +155,4 @@ ax.YRuler.Axle.LineWidth = 1.5;
 grid
 grid minor
 saveas(gca,[title_name '.png'])
-
 end

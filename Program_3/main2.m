@@ -66,9 +66,9 @@ iter = 0;
 SE_tol = 0.001;
 
 % Adding Bad Data
-% z_m(2) = 3;
-% z_m(26) = 10;
-% z_m(54) = 10;
+z_m(2) = 1.5;
+z_m(26) = 10;
+z_m(54) = 10;
 
 while error >= SE_tol
         % calculating bus powers

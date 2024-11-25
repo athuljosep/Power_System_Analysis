@@ -1,7 +1,7 @@
 function [V_data,T_data,Tol_data] = NR(bus_data,V,T,P_inj,Q_inj,n_bus,Y,n_pq,pq_i)
 % Initializing index
 i = 0;
-Tol = 1;
+Tol = 1e-4;
 del_T = zeros(n_bus,1);
 del_V = zeros(n_bus,1);
 
